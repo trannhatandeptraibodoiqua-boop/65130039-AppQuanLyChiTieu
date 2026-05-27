@@ -66,7 +66,6 @@ public class HomeFragment extends Fragment {
         tvBudgetInfo = view.findViewById(R.id.tvBudgetInfo);
         progressBudget = view.findViewById(R.id.progressBudget);
         RecyclerView rvTransactions = view.findViewById(R.id.rvTransactions);
-        Button btnOpenAddDialog = view.findViewById(R.id.btnOpenAddDialog);
         btnSetBudget = view.findViewById(R.id.btnSetBudget);
         btnLogout = view.findViewById(R.id.btnLogout);
 
@@ -100,7 +99,6 @@ public class HomeFragment extends Fragment {
             if (msg != null && getContext() != null) Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
         });
 
-        btnOpenAddDialog.setOnClickListener(v -> showAddTransactionDialog());
         btnSetBudget.setOnClickListener(v -> showSetBudgetDialog());
         btnLogout.setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut();
@@ -152,67 +150,5 @@ public class HomeFragment extends Fragment {
         });
         builder.setNegativeButton("HỦY", (dialog, which) -> dialog.cancel());
         builder.show();
-    }
-
-    private void showAddTransactionDialog() {
-        if (getContext() == null) return;
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_add_transaction, null);
-        builder.setView(dialogView);
-
-        EditText edtAmount = dialogView.findViewById(R.id.edtAmount);
-        RadioGroup rgType = dialogView.findViewById(R.id.rgType);
-        Spinner spnCategory = dialogView.findViewById(R.id.spnCategory);
-        Button btnDatePicker = dialogView.findViewById(R.id.btnDatePicker);
-        EditText edtNote = dialogView.findViewById(R.id.edtNote);
-        Button btnSave = dialogView.findViewById(R.id.btnSaveTransaction);
-
-        btnDatePicker.setText(selectedDate.get(Calendar.DAY_OF_MONTH) + "/" + (selectedDate.get(Calendar.MONTH) + 1) + "/" + selectedDate.get(Calendar.YEAR));
-
-        // Định nghĩa 2 mảng danh mục riêng biệt cho Thu và Chi
-        String[] expenseCategories = {"Ăn uống", "Mua sắm", "Di chuyển", "Giải trí", "Y tế", "Nhà cửa"};
-        String[] incomeCategories = {"Lương thưởng", "Làm thêm (Freelance)", "Được tặng", "Tiền lãi / Đầu tư"};
-
-        // Hàm helper để cập nhật dữ liệu cho Spinner
-        Runnable updateSpinnerCategories = () -> {
-            String[] targetCategories = (rgType.getCheckedRadioButtonId() == R.id.rbIncome) ? incomeCategories : expenseCategories;
-            ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, targetCategories);
-            spnCategory.setAdapter(spinnerAdapter);
-        };
-
-        // Khởi tạo danh mục ban đầu dựa theo trạng thái mặc định của RadioGroup
-        updateSpinnerCategories.run();
-
-        // LẮNG NGHE SỰ KIỆN ĐỔI TAB THU/CHI: Thay đổi danh mục tương ứng ngay lập tức
-        rgType.setOnCheckedChangeListener((group, checkedId) -> {
-            updateSpinnerCategories.run();
-        });
-
-        btnDatePicker.setOnClickListener(v -> {
-            DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), (view, year, month, dayOfMonth) -> {
-                selectedDate.set(year, month, dayOfMonth);
-                btnDatePicker.setText(dayOfMonth + "/" + (month + 1) + "/" + year);
-            }, selectedDate.get(Calendar.YEAR), selectedDate.get(Calendar.MONTH), selectedDate.get(Calendar.DAY_OF_MONTH));
-            datePickerDialog.show();
-        });
-
-        AlertDialog dialog = builder.create();
-        btnSave.setOnClickListener(v -> {
-            String amountStr = edtAmount.getText().toString().trim();
-            if (amountStr.isEmpty()) {
-                Toast.makeText(getContext(), "Vui lòng nhập số tiền hợp lệ!", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            double amount = Double.parseDouble(amountStr);
-            String type = rgType.getCheckedRadioButtonId() == R.id.rbIncome ? "INCOME" : "EXPENSE";
-            String category = spnCategory.getSelectedItem().toString();
-            String note = edtNote.getText().toString().trim();
-
-            TransactionModel newTrans = new TransactionModel("", currentUid, amount, type, category, new Timestamp(selectedDate.getTime()), note);
-            viewModel.addTransaction(newTrans);
-            dialog.dismiss();
-            selectedDate = Calendar.getInstance(); // Reset về ngày hiện tại
-        });
-        dialog.show();
     }
 }

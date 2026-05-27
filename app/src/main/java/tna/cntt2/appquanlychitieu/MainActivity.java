@@ -30,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
                 selectedFragment = new HomeFragment();
             } else if (id == R.id.nav_calendar) {
                 selectedFragment = new CalendarFragment();
+            } else if (id == R.id.nav_input) {
+                selectedFragment = new InputFragment();
             } else if (id == R.id.nav_report) {
                 selectedFragment = new ReportFragment();
             }

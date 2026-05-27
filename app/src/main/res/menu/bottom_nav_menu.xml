@@ -3,11 +3,18 @@
     <item
         android:id="@+id/nav_home"
         android:icon="@drawable/ic_home"
-        android:title="Tổng quan" />
+        android:title="Ví" />
+
     <item
         android:id="@+id/nav_calendar"
         android:icon="@drawable/ic_calendar"
-        android:title="Lịch thu chi" />
+        android:title="Lịch" />
+
+    <item
+        android:id="@+id/nav_input"
+        android:icon="@android:drawable/ic_menu_add"
+        android:title="Nhập giao dịch" />
+
     <item
         android:id="@+id/nav_report"
         android:icon="@drawable/ic_chart"

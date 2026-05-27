@@ -129,14 +129,4 @@
         android:layout_marginBottom="12dp"
         android:scrollbars="none"/>
 
-    <Button
-        android:id="@+id/btnOpenAddDialog"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:text="+ THÊM GIAO DỊCH"
-        android:textColor="#FFFFFF"
-        android:textStyle="bold"
-        android:textSize="14sp"
-        android:backgroundTint="#4CAF50"
-        app:cornerRadius="12dp"/>
 </LinearLayout>
