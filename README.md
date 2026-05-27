@@ -16,7 +16,8 @@ Lưu code của project thiết kế và xây dựng ứng dụng quản lý chi
 <img width="467" height="841" alt="image" src="https://github.com/user-attachments/assets/44ba8e12-03b5-4471-ab9e-4d3c50ed1d98" />
 
 6. Giao diện màn hình báo cáo (báo cáo thu chi theo tháng/năm)
-<img width="499" height="868" alt="image" src="https://github.com/user-attachments/assets/0a00e6b6-a6fb-4a2c-8022-365b8ef6031f" />
+<img width="423" height="797" alt="image" src="https://github.com/user-attachments/assets/15f5268c-86e3-421a-8633-260886fca1a4" />
+
 
 
 
