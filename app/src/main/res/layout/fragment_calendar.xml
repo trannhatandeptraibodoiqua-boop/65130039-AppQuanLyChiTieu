@@ -16,8 +16,7 @@
         android:textStyle="bold"
         android:textColor="#1A237E"
         android:layout_marginTop="4dp"
-        android:layout_marginBottom="16dp"
-        android:letterSpacing="0.01"/>
+        android:layout_marginBottom="12dp"/>
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
@@ -26,13 +25,67 @@
         app:cardElevation="4dp"
         android:layout_marginBottom="16dp">
 
-        <CalendarView
-            android:id="@+id/calendarView"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:background="#FFFFFF"
-            android:focusedMonthDateColor="#1E3C72"
-            android:theme="@style/Widget.CalendarView.Custom" />
+            android:padding="8dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:orientation="horizontal"
+                android:gravity="center">
+                <ImageButton
+                    android:id="@+id/btnPrevMonth"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@android:drawable/ic_media_previous"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:contentDescription="Tháng trước" />
+                <TextView
+                    android:id="@+id/tvMonthYear"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Tháng 05/2026"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#1E3C72"
+                    android:gravity="center"/>
+                <ImageButton
+                    android:id="@+id/btnNextMonth"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@android:drawable/ic_media_next"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:contentDescription="Tháng sau" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingVertical="4dp">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="CN" android:textColor="#E53935" android:textStyle="bold" android:gravity="center"/>
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="T2" android:textColor="#757575" android:gravity="center"/>
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="T3" android:textColor="#757575" android:gravity="center"/>
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="T4" android:textColor="#757575" android:gravity="center"/>
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="T5" android:textColor="#757575" android:gravity="center"/>
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="T6" android:textColor="#757575" android:gravity="center"/>
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="T7" android:textColor="#1E3C72" android:textStyle="bold" android:gravity="center"/>
+            </LinearLayout>
+
+            <GridView
+                android:id="@+id/gridViewCalendar"
+                android:layout_width="match_parent"
+                android:layout_height="190dp"
+                android:numColumns="7"
+                android:verticalSpacing="2dp"
+                android:horizontalSpacing="2dp"
+                android:stretchMode="columnWidth"/>
+        </LinearLayout>
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
@@ -40,96 +93,29 @@
         android:layout_height="wrap_content"
         app:cardCornerRadius="12dp"
         app:cardElevation="2dp"
-        android:layout_marginBottom="16dp">
-
+        android:layout_marginBottom="12dp">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="12dp"
-            android:background="#FFFFFF"
-            android:baselineAligned="false">
-
+            android:background="#FFFFFF">
             <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:gravity="center">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Thu nhập"
-                    android:textSize="12sp"
-                    android:textColor="#757575"
-                    android:fontFamily="sans-serif-medium"/>
-                <TextView
-                    android:id="@+id/tvDayIncome"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0 đ"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:textColor="#4CAF50"
-                    android:layout_marginTop="2dp"/>
+                android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Thu nhập" android:textSize="12sp" android:textColor="#757575"/>
+                <TextView android:id="@+id/tvDayIncome" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0 đ" android:textSize="14sp" android:textStyle="bold" android:textColor="#4CAF50" android:layout_marginTop="2dp"/>
             </LinearLayout>
-
-            <View
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:background="#E0E0E0"/>
-
+            <View android:layout_width="1dp" android:layout_height="match_parent" android:background="#E0E0E0"/>
             <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:gravity="center">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Chi tiêu"
-                    android:textSize="12sp"
-                    android:textColor="#757575"
-                    android:fontFamily="sans-serif-medium"/>
-                <TextView
-                    android:id="@+id/tvDayExpense"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0 đ"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:textColor="#F44336"
-                    android:layout_marginTop="2dp"/>
+                android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Chi tiêu" android:textSize="12sp" android:textColor="#757575"/>
+                <TextView android:id="@+id/tvDayExpense" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0 đ" android:textSize="14sp" android:textStyle="bold" android:textColor="#F44336" android:layout_marginTop="2dp"/>
             </LinearLayout>
-
-            <View
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:background="#E0E0E0"/>
-
+            <View android:layout_width="1dp" android:layout_height="match_parent" android:background="#E0E0E0"/>
             <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:gravity="center">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Tổng cộng"
-                    android:textSize="12sp"
-                    android:textColor="#757575"
-                    android:fontFamily="sans-serif-medium"/>
-                <TextView
-                    android:id="@+id/tvDayTotal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0 đ"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:textColor="#1E3C72"
-                    android:layout_marginTop="2dp"/>
+                android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Tổng cộng" android:textSize="12sp" android:textColor="#757575"/>
+                <TextView android:id="@+id/tvDayTotal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0 đ" android:textSize="14sp" android:textStyle="bold" android:textColor="#1E3C72" android:layout_marginTop="2dp"/>
             </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
@@ -142,13 +128,11 @@
         android:fontFamily="sans-serif-medium"
         android:textColor="#757575"
         android:layout_marginBottom="8dp"
-        android:layout_marginStart="4dp"
-        android:letterSpacing="0.02"/>
+        android:layout_marginStart="4dp"/>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
         <TextView
             android:id="@+id/tvNoData"
             android:layout_width="match_parent"
@@ -158,11 +142,8 @@
             android:gravity="center"
             android:textColor="#9E9E9E"
             android:textSize="14sp"
-            android:fontFamily="sans-serif-medium"
             android:padding="16dp"
-            android:layout_marginTop="4dp"
             android:visibility="visible"/>
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewCalendar"
             android:layout_width="match_parent"
