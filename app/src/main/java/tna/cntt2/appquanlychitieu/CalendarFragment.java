@@ -30,11 +30,14 @@ public class CalendarFragment extends Fragment {
     private RecyclerView recyclerViewCalendar;
     private TextView tvNoData;
 
+    // Khai báo thêm các View hiển thị tóm tắt số tiền trong ngày
+    private TextView tvDayIncome, tvDayExpense, tvDayTotal;
+
     private TransactionAdapter adapter;
     private List<TransactionModel> transactionList;
     private FirebaseFirestore db;
     private FirebaseAuth auth;
-    private String selectedDateStr = ""; // Lưu ngày đang chọn định dạng dd/MM/yyyy
+    private String selectedDateStr = "";
 
     @Nullable
     @Override
@@ -46,21 +49,24 @@ public class CalendarFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // 1. Ánh xạ View
+        // 1. Ánh xạ View cũ và mới
         calendarView = view.findViewById(R.id.calendarView);
         recyclerViewCalendar = view.findViewById(R.id.recyclerViewCalendar);
         tvNoData = view.findViewById(R.id.tvNoData);
+
+        tvDayIncome = view.findViewById(R.id.tvDayIncome);
+        tvDayExpense = view.findViewById(R.id.tvDayExpense);
+        tvDayTotal = view.findViewById(R.id.tvDayTotal);
 
         // 2. Khởi tạo Firebase
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
         transactionList = new ArrayList<>();
 
-        // 3. Khởi tạo Adapter theo đúng Constructor nhận Listener của bạn
+        // 3. Khởi tạo Adapter
         adapter = new TransactionAdapter(new TransactionAdapter.OnTransactionClickListener() {
             @Override
             public void onDeleteClick(TransactionModel transaction) {
-                // Gọi hàm xóa giao dịch khi bấm nút thùng rác
                 deleteTransaction(transaction);
             }
         });
@@ -68,7 +74,7 @@ public class CalendarFragment extends Fragment {
         recyclerViewCalendar.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerViewCalendar.setAdapter(adapter);
 
-        // 4. Mặc định load ngày hôm nay khi vừa mở tab
+        // 4. Mặc định load ngày hôm nay khi mở tab
         Calendar calendar = Calendar.getInstance();
         selectedDateStr = String.format("%02d/%02d/%d",
                 calendar.get(Calendar.DAY_OF_MONTH),
@@ -86,7 +92,6 @@ public class CalendarFragment extends Fragment {
         });
     }
 
-    // Hàm lấy toàn bộ giao dịch của User và lọc theo ngày bằng thuật toán Java (Vì DB dùng Timestamp)
     private void loadTransactionsByDate(String targetDate) {
         String userId = auth.getCurrentUser() != null ? auth.getCurrentUser().getUid() : "";
         if (userId.isEmpty()) return;
@@ -98,25 +103,48 @@ public class CalendarFragment extends Fragment {
                     transactionList.clear();
                     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
 
+                    // Các biến cục bộ phục vụ thuật toán cộng dồn dòng tiền
+                    double totalIncome = 0;
+                    double totalExpense = 0;
+
                     for (DocumentSnapshot doc : queryDocumentSnapshots) {
                         TransactionModel model = doc.toObject(TransactionModel.class);
                         if (model != null) {
-                            // Đảm bảo model có giữ Id document phòng trường hợp trường transactionId trong Object bị trống
                             if (model.getTransactionId() == null || model.getTransactionId().isEmpty()) {
                                 model.setTransactionId(doc.getId());
                             }
 
-                            // Chuyển đổi Timestamp của giao dịch thành chuỗi dd/MM/yyyy để so sánh
                             if (model.getTimestamp() != null) {
                                 String itemDate = sdf.format(model.getTimestamp().toDate());
                                 if (targetDate.equals(itemDate)) {
                                     transactionList.add(model);
+
+                                    // Thuật toán phân loại và tính tổng số tiền trong ngày chọn
+                                    if ("INCOME".equals(model.getType())) {
+                                        totalIncome += model.getAmount();
+                                    } else if ("EXPENSE".equals(model.getType())) {
+                                        totalExpense += model.getAmount();
+                                    }
                                 }
                             }
                         }
                     }
 
-                    // Cập nhật trạng thái hiển thị giao diện list
+                    // Đổ dữ liệu tổng hợp đã tính toán lên giao diện thanh tóm tắt
+                    tvDayIncome.setText(String.format("%,.0f đ", totalIncome));
+                    tvDayExpense.setText(String.format("%,.0f đ", totalExpense));
+
+                    double dayTotal = totalIncome - totalExpense;
+                    tvDayTotal.setText(String.format("%,.0f đ", dayTotal));
+
+                    // Logic xử lý đổi màu sắc dựa theo trị số âm/dương của tổng tiền ngày
+                    if (dayTotal >= 0) {
+                        tvDayTotal.setTextColor(android.graphics.Color.parseColor("#1E3C72")); // Màu xanh dương nếu dư
+                    } else {
+                        tvDayTotal.setTextColor(android.graphics.Color.parseColor("#E53935")); // Màu đỏ nếu thâm hụt
+                    }
+
+                    // Cập nhật trạng thái hiển thị danh sách dòng
                     if (transactionList.isEmpty()) {
                         tvNoData.setVisibility(View.VISIBLE);
                         tvNoData.setText("Không có giao dịch nào trong ngày " + targetDate);
@@ -124,7 +152,7 @@ public class CalendarFragment extends Fragment {
                     } else {
                         tvNoData.setVisibility(View.GONE);
                         recyclerViewCalendar.setVisibility(View.VISIBLE);
-                        adapter.updateData(transactionList); // Đẩy data vào hàm updateData xịn của bạn
+                        adapter.updateData(transactionList);
                     }
                 })
                 .addOnFailureListener(e -> {
@@ -133,7 +161,6 @@ public class CalendarFragment extends Fragment {
                 });
     }
 
-    // Hàm xóa giao dịch chuẩn khớp với Model trường getTransactionId() của bạn
     private void deleteTransaction(TransactionModel transaction) {
         String docId = transaction.getTransactionId();
         if (docId == null || docId.isEmpty()) return;
@@ -142,7 +169,6 @@ public class CalendarFragment extends Fragment {
                 .delete()
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(getContext(), "Xóa giao dịch thành công!", Toast.LENGTH_SHORT).show();
-                    // Làm mới lại danh sách hiển thị của ngày vừa xóa
                     loadTransactionsByDate(selectedDateStr);
                 })
                 .addOnFailureListener(e -> {
