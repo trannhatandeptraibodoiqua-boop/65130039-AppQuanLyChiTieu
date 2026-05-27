@@ -168,9 +168,25 @@ public class HomeFragment extends Fragment {
         Button btnSave = dialogView.findViewById(R.id.btnSaveTransaction);
 
         btnDatePicker.setText(selectedDate.get(Calendar.DAY_OF_MONTH) + "/" + (selectedDate.get(Calendar.MONTH) + 1) + "/" + selectedDate.get(Calendar.YEAR));
-        String[] categories = {"Ăn uống", "Mua sắm", "Di chuyển", "Lương thưởng", "Giải trí", "Y tế"};
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, categories);
-        spnCategory.setAdapter(spinnerAdapter);
+
+        // Định nghĩa 2 mảng danh mục riêng biệt cho Thu và Chi
+        String[] expenseCategories = {"Ăn uống", "Mua sắm", "Di chuyển", "Giải trí", "Y tế", "Nhà cửa"};
+        String[] incomeCategories = {"Lương thưởng", "Làm thêm (Freelance)", "Được tặng", "Tiền lãi / Đầu tư"};
+
+        // Hàm helper để cập nhật dữ liệu cho Spinner
+        Runnable updateSpinnerCategories = () -> {
+            String[] targetCategories = (rgType.getCheckedRadioButtonId() == R.id.rbIncome) ? incomeCategories : expenseCategories;
+            ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, targetCategories);
+            spnCategory.setAdapter(spinnerAdapter);
+        };
+
+        // Khởi tạo danh mục ban đầu dựa theo trạng thái mặc định của RadioGroup
+        updateSpinnerCategories.run();
+
+        // LẮNG NGHE SỰ KIỆN ĐỔI TAB THU/CHI: Thay đổi danh mục tương ứng ngay lập tức
+        rgType.setOnCheckedChangeListener((group, checkedId) -> {
+            updateSpinnerCategories.run();
+        });
 
         btnDatePicker.setOnClickListener(v -> {
             DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), (view, year, month, dayOfMonth) -> {
@@ -195,7 +211,7 @@ public class HomeFragment extends Fragment {
             TransactionModel newTrans = new TransactionModel("", currentUid, amount, type, category, new Timestamp(selectedDate.getTime()), note);
             viewModel.addTransaction(newTrans);
             dialog.dismiss();
-            selectedDate = Calendar.getInstance();
+            selectedDate = Calendar.getInstance(); // Reset về ngày hiện tại
         });
         dialog.show();
     }

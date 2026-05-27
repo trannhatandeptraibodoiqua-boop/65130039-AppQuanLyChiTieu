@@ -1,52 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://tools.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="20dp"
-    android:background="#F8F9FA">
-
-    <androidx.cardview.widget.CardView
+    android:padding="16dp"
+    android:background="#F4F6F9"> <androidx.cardview.widget.CardView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="16dp">
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="4dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="16dp">
-        <LinearLayout
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:background="#1E3C72">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tổng số dư ví hiện tại"
+            android:textColor="#B3FFFFFF"
+            android:textSize="13sp"
+            android:fontFamily="sans-serif-medium" />
+        <TextView
+            android:id="@+id/tvBalance"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="24dp"
-            android:background="#1E3C72">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tổng số dư ví"
-                android:textColor="#B3FFFFFF"
-                android:textSize="14sp"
-                android:fontFamily="sans-serif-medium" />
-            <TextView
-                android:id="@+id/tvBalance"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:text="0 VNĐ"
-                android:textColor="#FFFFFF"
-                android:textSize="26sp"
-                android:fontFamily="sans-serif-black"
-                android:textStyle="bold" />
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
+            android:layout_marginTop="4dp"
+            android:text="0 VNĐ"
+            android:textColor="#FFFFFF"
+            android:textSize="24sp"
+            android:fontFamily="sans-serif-black"
+            android:textStyle="bold" />
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cardCornerRadius="16dp"
-        app:cardElevation="2dp"
-        android:layout_marginBottom="20dp">
+        app:cardElevation="3dp"
+        android:layout_marginBottom="16dp">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -56,7 +53,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp">
+                android:layout_marginBottom="8dp">
                 <TextView
                     android:id="@+id/tvBudgetInfo"
                     android:layout_width="wrap_content"
@@ -64,9 +61,9 @@
                     android:layout_alignParentStart="true"
                     android:layout_centerInParent="true"
                     android:text="Đã chi: 0 / 0 VNĐ"
-                    android:textSize="15sp"
+                    android:textSize="14sp"
                     android:fontFamily="sans-serif-medium"
-                    android:textColor="#1A1A1A" />
+                    android:textColor="#212121" />
                 <Button
                     android:id="@+id/btnSetBudget"
                     style="?android:attr/borderlessButtonStyle"
@@ -79,14 +76,14 @@
                     android:textStyle="bold"
                     android:minHeight="0dp"
                     android:minWidth="0dp"
-                    android:paddingHorizontal="12dp"
-                    android:paddingVertical="6dp"/>
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="4dp"/>
             </RelativeLayout>
             <ProgressBar
                 android:id="@+id/progressBudget"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
-                android:layout_height="8dp"
+                android:layout_height="6dp"
                 android:progress="0"
                 android:max="100"
                 android:progressTint="#4CAF50"/>
@@ -96,14 +93,15 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp">
+        android:layout_marginBottom="8dp"
+        android:paddingHorizontal="4dp">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_centerInParent="true"
-            android:text="Lịch sử giao dịch"
-            android:textSize="16sp"
+            android:text="Lịch sử giao dịch gần đây"
+            android:textSize="15sp"
             android:fontFamily="sans-serif-black"
             android:textStyle="bold"
             android:textColor="#1A1A1A"/>
@@ -119,8 +117,8 @@
             android:textStyle="bold"
             android:minHeight="0dp"
             android:minWidth="0dp"
-            android:paddingHorizontal="12dp"
-            android:paddingVertical="6dp"/>
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="4dp"/>
     </RelativeLayout>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -128,17 +126,17 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="12dp"
         android:scrollbars="none"/>
 
     <Button
         android:id="@+id/btnOpenAddDialog"
         android:layout_width="match_parent"
-        android:layout_height="54dp"
+        android:layout_height="48dp"
         android:text="+ THÊM GIAO DỊCH"
         android:textColor="#FFFFFF"
         android:textStyle="bold"
-        android:textSize="15sp"
+        android:textSize="14sp"
         android:backgroundTint="#4CAF50"
-        android:padding="14dp"/>
+        app:cornerRadius="12dp"/>
 </LinearLayout>
