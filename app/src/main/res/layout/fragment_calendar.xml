@@ -1,43 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="#F8F9FA">
+    android:background="#F4F6F9"> <TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Sổ Thu Chi Theo Lịch"
+    android:textSize="22sp"
+    android:fontFamily="sans-serif-black"
+    android:textStyle="bold"
+    android:textColor="#1A237E"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="16dp"
+    android:letterSpacing="0.01"/>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
+        android:layout_marginBottom="16dp">
+
+        <CalendarView
+            android:id="@+id/calendarView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            android:focusedMonthDateColor="#1E3C72"
+            android:theme="@style/Widget.CalendarView.Custom" />
+    </androidx.cardview.widget.CardView>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Sổ thu chi theo lịch"
-        android:textSize="20sp"
-        android:fontFamily="sans-serif-black"
-        android:textStyle="bold"
-        android:textColor="#1E3C72"
-        android:layout_marginBottom="16dp"/>
-
-    <CalendarView
-        android:id="@+id/calendarView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#FFFFFF"
-        android:elevation="2dp" />
-
-    <TextView
-        android:id="@+id/tvNoData"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Danh sách thu chi của ngày được chọn hiển thị tại đây..."
-        android:gravity="center"
-        android:layout_marginTop="32dp"
+        android:text="Chi tiết trong ngày"
+        android:textSize="14sp"
+        android:fontFamily="sans-serif-medium"
         android:textColor="#757575"
-        android:textSize="14sp" />
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="4dp"
+        android:letterSpacing="0.02"/>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewCalendar"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="16dp"
-        android:visibility="gone" />
+        android:layout_height="match_parent">
 
+        <TextView
+            android:id="@+id/tvNoData"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:background="@drawable/bg_empty_state"
+            android:text="Không có lịch sử thu chi nào trong ngày này!"
+            android:gravity="center"
+            android:textColor="#9E9E9E"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif-medium"
+            android:padding="16dp"
+            android:layout_marginTop="4dp"
+            android:visibility="visible"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewCalendar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"
+            android:clipToPadding="false"
+            android:paddingBottom="16dp"
+            android:visibility="gone" />
+    </FrameLayout>
 </LinearLayout>
