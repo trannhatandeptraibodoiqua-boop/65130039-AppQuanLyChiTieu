@@ -29,7 +29,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Đăng nhập để đồng bộ dữ liệu"
+            android:text="Đăng nhập để quản lý tài chính của bạn"
             android:textSize="14sp"
             android:fontFamily="sans-serif-medium"
             android:textColor="#757575"
