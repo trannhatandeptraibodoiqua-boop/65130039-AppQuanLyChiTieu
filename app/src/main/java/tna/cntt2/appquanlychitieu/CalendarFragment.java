@@ -179,11 +179,25 @@ public class CalendarFragment extends Fragment {
                         }
                     }
 
-                    tvDayIncome.setText(String.format(Locale.getDefault(), "%,.0f đ", totalIncome));
-                    tvDayExpense.setText(String.format(Locale.getDefault(), "%,.0f đ", totalExpense));
+                    // 1. Thêm dấu "+" cố định cho khối Thu Nhập
+                    tvDayIncome.setText(String.format(Locale.getDefault(), "+%,.0f đ", totalIncome));
+
+                    // 2. Thêm dấu "-" cố định cho khối Chi Tiêu
+                    tvDayExpense.setText(String.format(Locale.getDefault(), "-%,.0f đ", totalExpense));
+
+                    // 3. Xử lý dấu động cho khối Tổng Cộng dựa trên kết quả dòng tiền ngày
                     double dayTotal = totalIncome - totalExpense;
-                    tvDayTotal.setText(String.format(Locale.getDefault(), "%,.0f đ", dayTotal));
-                    tvDayTotal.setTextColor(Color.parseColor(dayTotal >= 0 ? "#1E3C72" : "#E53935"));
+                    if (dayTotal > 0) {
+                        tvDayTotal.setText(String.format(Locale.getDefault(), "+%,.0f đ", dayTotal));
+                        tvDayTotal.setTextColor(Color.parseColor("#1E3C72")); // Xanh dương khi dư dả
+                    } else if (dayTotal < 0) {
+                        // Bản thân dayTotal âm đã mang sẵn dấu trừ hệ thống nên không cần chèn thêm kí tự '-' tay
+                        tvDayTotal.setText(String.format(Locale.getDefault(), "%,.0f đ", dayTotal));
+                        tvDayTotal.setTextColor(Color.parseColor("#E53935")); // Đỏ khi thâm hụt
+                    } else {
+                        tvDayTotal.setText("0 đ");
+                        tvDayTotal.setTextColor(Color.parseColor("#757575")); // Xám trung tính khi huề vốn
+                    }
 
                     if (transactionList.isEmpty()) {
                         tvNoData.setVisibility(View.VISIBLE);

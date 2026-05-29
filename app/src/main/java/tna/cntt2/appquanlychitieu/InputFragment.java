@@ -62,8 +62,8 @@ public class InputFragment extends Fragment {
         updateDateButtonText();
 
         // Khai báo mảng danh mục dữ liệu của bạn
-        String[] expenseCategories = {"Ăn uống", "Mua sắm", "Di chuyển", "Giải trí", "Y tế", "Nhà cửa"};
-        String[] incomeCategories = {"Lương thưởng", "Làm thêm (Freelance)", "Được tặng", "Tiền lãi / Đầu tư"};
+        String[] expenseCategories = {"Ăn uống", "Mua sắm", "Di chuyển", "Giải trí", "Y tế", "Nhà cửa", "Khác"};
+        String[] incomeCategories = {"Lương thưởng", "Làm thêm (Freelance)", "Được tặng", "Tiền lãi / Đầu tư", "Khác"};
 
         // Xử lý đổi danh mục động theo Thu / Chi
         Runnable updateSpinnerCategories = () -> {
