@@ -7,40 +7,49 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class ReportFragment extends Fragment {
 
     private PieChart pieChart;
-    private TextView tvTotalIncome, tvTotalExpense, tvDifference, tvChartTitle, tvTimeDisplay;
+    private TextView tvTotalIncome, tvTotalExpense, tvDifference, tvChartTitle, tvTimeDisplay, tvListTitle;
     private TabLayout tabLayoutReport, tabLayoutChartType;
     private ImageButton btnPrevious, btnNext;
+
+    // Khai báo thêm phần danh sách con
+    private RecyclerView rvReportTransactions;
+    private TransactionAdapter transactionAdapter;
+    private List<TransactionModel> filteredExpenseList = new ArrayList<>();
+    private List<TransactionModel> filteredIncomeList = new ArrayList<>();
 
     private FirebaseFirestore db;
     private FirebaseAuth auth;
 
     private boolean isMonthReport = true;
-    private boolean isExpenseChartActive = true; // Theo dõi đang xem biểu đồ Chi hay Thu
+    private boolean isExpenseChartActive = true;
 
-    // Hai bản đồ lưu trữ danh mục tương ứng
     private HashMap<String, Double> expenseByCategoryMap = new HashMap<>();
     private HashMap<String, Double> incomeByCategoryMap = new HashMap<>();
 
@@ -62,21 +71,28 @@ public class ReportFragment extends Fragment {
         tvTotalExpense = view.findViewById(R.id.tvTotalExpense);
         tvDifference = view.findViewById(R.id.tvDifference);
         tvChartTitle = view.findViewById(R.id.tvChartTitle);
+        tvListTitle = view.findViewById(R.id.tvListTitle);
         tabLayoutReport = view.findViewById(R.id.tabLayoutReport);
         tabLayoutChartType = view.findViewById(R.id.tabLayoutChartType);
         tvTimeDisplay = view.findViewById(R.id.tvTimeDisplay);
         btnPrevious = view.findViewById(R.id.btnPrevious);
         btnNext = view.findViewById(R.id.btnNext);
+        rvReportTransactions = view.findViewById(R.id.rvReportTransactions);
 
-        // 2. Khởi tạo dữ liệu gốc
+        // 2. Cấu hình RecyclerView cho danh sách giao dịch con
+        transactionAdapter = new TransactionAdapter(this::deleteTransaction);
+        rvReportTransactions.setLayoutManager(new LinearLayoutManager(getContext()));
+        rvReportTransactions.setAdapter(transactionAdapter);
+
+        // 3. Khởi tạo dữ liệu gốc
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
         reportCalendar = Calendar.getInstance();
 
-        // 3. Tải dữ liệu mặc định
+        // 4. Tải dữ liệu mặc định
         loadReportData();
 
-        // 4. Lắng nghe chuyển Tab Lọc Thời Gian (Tháng / Năm)
+        // 5. Lắp bộ lắng nghe Tab Lọc Thời Gian (Tháng / Năm)
         tabLayoutReport.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -89,12 +105,12 @@ public class ReportFragment extends Fragment {
             public void onTabReselected(TabLayout.Tab tab) {}
         });
 
-        // Lắng nghe chuyển đổi Tab loại biểu đồ (Chi tiêu / Thu nhập)
+        // Lắp bộ lắng nghe Tab loại biểu đồ (Chi tiêu / Thu nhập)
         tabLayoutChartType.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 isExpenseChartActive = (tab.getPosition() == 0);
-                updateChartDisplay(); // Chỉ cần vẽ lại hình từ dữ liệu có sẵn, không tải lại Firebase
+                updateChartDisplay();
             }
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {}
@@ -102,23 +118,14 @@ public class ReportFragment extends Fragment {
             public void onTabReselected(TabLayout.Tab tab) {}
         });
 
-        // 5. Điều hướng nút bấm lùi thời gian
+        // 6. Điều hướng nút bấm lùi/tiến thời gian
         btnPrevious.setOnClickListener(v -> {
-            if (isMonthReport) {
-                reportCalendar.add(Calendar.MONTH, -1);
-            } else {
-                reportCalendar.add(Calendar.YEAR, -1);
-            }
+            reportCalendar.add(isMonthReport ? Calendar.MONTH : Calendar.YEAR, -1);
             loadReportData();
         });
 
-        // 6. Điều hướng nút bấm tiến thời gian
         btnNext.setOnClickListener(v -> {
-            if (isMonthReport) {
-                reportCalendar.add(Calendar.MONTH, 1);
-            } else {
-                reportCalendar.add(Calendar.YEAR, 1);
-            }
+            reportCalendar.add(isMonthReport ? Calendar.MONTH : Calendar.YEAR, 1);
             loadReportData();
         });
     }
@@ -131,7 +138,7 @@ public class ReportFragment extends Fragment {
         int selectedYear = reportCalendar.get(Calendar.YEAR);
 
         if (isMonthReport) {
-            String monthText = String.format("%02d/%d", (selectedMonth + 1), selectedYear);
+            String monthText = String.format(Locale.getDefault(), "%02d/%d", (selectedMonth + 1), selectedYear);
             tvTimeDisplay.setText(monthText);
         } else {
             String yearText = String.valueOf(selectedYear);
@@ -146,14 +153,19 @@ public class ReportFragment extends Fragment {
                     double totalIncome = 0;
                     double totalExpense = 0;
 
-                    // Xóa sạch dữ liệu cũ trước khi nạp bộ lọc mới
                     expenseByCategoryMap.clear();
                     incomeByCategoryMap.clear();
+                    filteredExpenseList.clear();
+                    filteredIncomeList.clear();
 
                     for (DocumentSnapshot doc : queryDocumentSnapshots) {
                         TransactionModel model = doc.toObject(TransactionModel.class);
 
                         if (model != null && model.getTimestamp() != null) {
+                            if (model.getTransactionId() == null || model.getTransactionId().isEmpty()) {
+                                model.setTransactionId(doc.getId());
+                            }
+
                             Calendar itemCal = Calendar.getInstance();
                             itemCal.setTime(model.getTimestamp().toDate());
 
@@ -169,7 +181,8 @@ public class ReportFragment extends Fragment {
 
                                 if ("INCOME".equals(model.getType())) {
                                     totalIncome += model.getAmount();
-                                    // Gom nhóm danh mục Thu Nhập
+                                    filteredIncomeList.add(model); // Thêm vào list thu con
+
                                     if (incomeByCategoryMap.containsKey(category)) {
                                         incomeByCategoryMap.put(category, incomeByCategoryMap.get(category) + model.getAmount());
                                     } else {
@@ -177,7 +190,8 @@ public class ReportFragment extends Fragment {
                                     }
                                 } else {
                                     totalExpense += model.getAmount();
-                                    // Gom nhóm danh mục Chi Tiêu
+                                    filteredExpenseList.add(model); // Thêm vào list chi con
+
                                     if (expenseByCategoryMap.containsKey(category)) {
                                         expenseByCategoryMap.put(category, expenseByCategoryMap.get(category) + model.getAmount());
                                     } else {
@@ -188,21 +202,18 @@ public class ReportFragment extends Fragment {
                         }
                     }
 
-                    // Hiển thị số tiền lên các ô chỉ số công khai
-                    tvTotalIncome.setText(String.format("+%,.0f đ", totalIncome));
-                    tvTotalExpense.setText(String.format("-%,.0f đ", totalExpense));
+                    tvTotalIncome.setText(String.format(Locale.getDefault(), "+%,.0f đ", totalIncome));
+                    tvTotalExpense.setText(String.format(Locale.getDefault(), "-%,.0f đ", totalExpense));
 
-                    // Tính toán hiệu số chênh lệch thu chi công thêm màu sắc phân biệt sinh động
                     double difference = totalIncome - totalExpense;
                     if (difference >= 0) {
-                        tvDifference.setText(String.format("+%,.0f đ", difference));
-                        tvDifference.setTextColor(Color.parseColor("#1E3C72")); // Màu xanh dương nếu dương tiền
+                        tvDifference.setText(String.format(Locale.getDefault(), "+%,.0f đ", difference));
+                        tvDifference.setTextColor(Color.parseColor("#1E3C72"));
                     } else {
-                        tvDifference.setText(String.format("%,.0f đ", difference));
-                        tvDifference.setTextColor(Color.parseColor("#C62828")); // Màu đỏ nếu âm tiền
+                        tvDifference.setText(String.format(Locale.getDefault(), "%,.0f đ", difference));
+                        tvDifference.setTextColor(Color.parseColor("#C62828"));
                     }
 
-                    // Đẩy dữ liệu ra hàm phân phối biểu đồ hiển thị
                     updateChartDisplay();
                 });
     }
@@ -212,10 +223,18 @@ public class ReportFragment extends Fragment {
 
         if (isExpenseChartActive) {
             tvChartTitle.setText(isMonthReport ? "Cấu trúc chi tiêu tháng " + timeText : "Cấu trúc chi tiêu cả năm " + timeText);
+            tvListTitle.setText("Chi tiết các khoản chi tiêu");
             drawPieChart(expenseByCategoryMap, "Chi tiêu");
+
+            // Đổ danh sách khoản chi vào adapter
+            transactionAdapter.updateData(filteredExpenseList);
         } else {
             tvChartTitle.setText(isMonthReport ? "Cấu trúc thu nhập tháng " + timeText : "Cấu trúc thu nhập cả năm " + timeText);
+            tvListTitle.setText("Chi tiết các khoản thu nhập");
             drawPieChart(incomeByCategoryMap, "Thu nhập");
+
+            // Đổ danh sách khoản thu vào adapter
+            transactionAdapter.updateData(filteredIncomeList);
         }
     }
 
@@ -228,7 +247,7 @@ public class ReportFragment extends Fragment {
 
         if (entries.isEmpty()) {
             pieChart.clear();
-            pieChart.setNoDataText("Không có dữ liệu dữ liệu " + labelType.toLowerCase() + " để hiển thị!");
+            pieChart.setNoDataText("Không có dữ liệu " + labelType.toLowerCase() + " để hiển thị!");
             pieChart.setNoDataTextColor(Color.GRAY);
             pieChart.invalidate();
             return;
@@ -236,29 +255,23 @@ public class ReportFragment extends Fragment {
 
         PieDataSet dataSet = new PieDataSet(entries, "");
 
-        // Bộ màu sắc tươi sáng cho các lát bánh
         int[] premiumColors = new int[] {
-                Color.parseColor("#1E3C72"), // Xanh đậm
-                Color.parseColor("#2E7D32"), // Xanh lá
-                Color.parseColor("#FF9800"), // Cam
-                Color.parseColor("#E53935"), // Đỏ
-                Color.parseColor("#00ACC1"), // Xanh Teal
-                Color.parseColor("#8E24AA")  // Tím
+                Color.parseColor("#1E3C72"), Color.parseColor("#2E7D32"),
+                Color.parseColor("#FF9800"), Color.parseColor("#E53935"),
+                Color.parseColor("#00ACC1"), Color.parseColor("#8E24AA")
         };
         dataSet.setColors(premiumColors);
-        dataSet.setXValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE); // Đẩy tên danh mục ra ngoài
-        dataSet.setYValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE); // Đẩy số phần trăm (%) ra ngoài
+        dataSet.setXValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
+        dataSet.setYValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
 
-        // Cấu hình đường kẻ mũi tên chỉ từ chữ vào lát bánh tương ứng
-        dataSet.setValueLineColor(Color.parseColor("#757575")); // Màu đường chỉ (Màu xám)
-        dataSet.setValueLineWidth(1.2f); // Độ dày đường chỉ
-        dataSet.setValueLinePart1OffsetPercentage(80f); // Độ dài đoạn thẳng 1
-        dataSet.setValueLinePart1Length(0.4f); // Độ dài đoạn thẳng 2
+        dataSet.setValueLineColor(Color.parseColor("#757575"));
+        dataSet.setValueLineWidth(1.2f);
+        dataSet.setValueLinePart1OffsetPercentage(80f);
+        dataSet.setValueLinePart1Length(0.4f);
         dataSet.setValueLinePart2Length(0.4f);
 
-        // Vì chữ đã nhảy ra ngoài nền trắng, ta đổi màu chữ sang màu tối để nhìn rõ nét
         dataSet.setValueTextSize(12f);
-        dataSet.setValueTextColor(Color.parseColor("#1E3C72")); // Màu của con số % (Xanh đậm)
+        dataSet.setValueTextColor(Color.parseColor("#1E3C72"));
 
         PieData data = new PieData(dataSet);
         data.setValueFormatter(new com.github.mikephil.charting.formatter.PercentFormatter(pieChart));
@@ -267,22 +280,18 @@ public class ReportFragment extends Fragment {
         pieChart.setUsePercentValues(true);
         pieChart.setDescription(null);
 
-        // Bật lại hiển thị chữ danh mục
         pieChart.setDrawEntryLabels(true);
-        pieChart.setEntryLabelColor(Color.parseColor("#424242")); // Đổi màu chữ Danh mục thành màu xám đen để nổi trên nền trắng
-        pieChart.setEntryLabelTextSize(11f); // Cỡ chữ danh mục
+        pieChart.setEntryLabelColor(Color.parseColor("#424242"));
+        pieChart.setEntryLabelTextSize(11f);
 
-        // Cấu hình vòng tròn rỗng ở giữa biểu đồ
         pieChart.setDrawHoleEnabled(true);
         pieChart.setHoleColor(Color.WHITE);
         pieChart.setCenterText("Tỷ lệ\n" + labelType);
         pieChart.setCenterTextSize(14f);
         pieChart.setCenterTextColor(Color.parseColor("#1E3C72"));
 
-        // Khoảng cách lề xung quanh biểu đồ để chữ ở ngoài không bị cắt mất
         pieChart.setExtraOffsets(25f, 10f, 25f, 10f);
 
-        // Bảng chú thích màu sắc ở góc dưới cùng
         com.github.mikephil.charting.components.Legend legend = pieChart.getLegend();
         legend.setTextSize(11f);
         legend.setTextColor(Color.parseColor("#616161"));
@@ -290,5 +299,16 @@ public class ReportFragment extends Fragment {
 
         pieChart.animateY(600);
         pieChart.invalidate();
+    }
+
+    private void deleteTransaction(TransactionModel transaction) {
+        String docId = transaction.getTransactionId();
+        if (docId == null || docId.isEmpty()) return;
+
+        db.collection("transactions").document(docId).delete()
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(getContext(), "Xóa giao dịch thành công!", Toast.LENGTH_SHORT).show();
+                    loadReportData(); // Reload toàn bộ dữ liệu báo cáo sau khi xóa thành công
+                });
     }
 }
