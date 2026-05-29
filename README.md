@@ -1,10 +1,10 @@
 # 65130039-AppQuanLyChiTieu
 Lưu code của project thiết kế và xây dựng ứng dụng quản lý chi tiêu
 1. Giao diện đăng nhập
-<img width="620" height="848" alt="image" src="https://github.com/user-attachments/assets/f4021009-efdf-49fc-8c6b-9f36b11a37fc" />
+<img width="435" height="821" alt="image" src="https://github.com/user-attachments/assets/b1c44f5e-4d6c-4b65-87f1-52f0100f430f" />
 
 2. Giao diện đăng ký
-<img width="538" height="884" alt="image" src="https://github.com/user-attachments/assets/ce883930-2dac-4486-a7ad-36da160f0adb" />
+<img width="435" height="827" alt="image" src="https://github.com/user-attachments/assets/9d9bd2a6-78aa-4172-85cb-96ea6ca0bb87" />
 
 3. Giao diện màn hình Ví
 <img width="403" height="810" alt="image" src="https://github.com/user-attachments/assets/f4895432-4f49-483e-9571-c6c9191bc3c4" />
@@ -16,7 +16,8 @@ Lưu code của project thiết kế và xây dựng ứng dụng quản lý chi
 <img width="413" height="801" alt="image" src="https://github.com/user-attachments/assets/fa32ca7d-da68-4f34-9526-33d70c479ff2" />
 
 6. Giao diện màn hình báo cáo (báo cáo thu chi theo tháng/năm)
-<img width="423" height="797" alt="image" src="https://github.com/user-attachments/assets/15f5268c-86e3-421a-8633-260886fca1a4" />
+<img width="521" height="832" alt="image" src="https://github.com/user-attachments/assets/ba25b6ed-85a0-4cf4-9cf9-27d345633b60" />
+
 
 
 
