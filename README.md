@@ -7,13 +7,13 @@ Lưu code của project thiết kế và xây dựng ứng dụng quản lý chi
 <img width="538" height="884" alt="image" src="https://github.com/user-attachments/assets/ce883930-2dac-4486-a7ad-36da160f0adb" />
 
 3. Giao diện màn hình Ví
-<img width="456" height="842" alt="image" src="https://github.com/user-attachments/assets/f4afeadc-5e49-43f3-af7e-6f260a7daf28" />
+<img width="403" height="810" alt="image" src="https://github.com/user-attachments/assets/f4895432-4f49-483e-9571-c6c9191bc3c4" />
 
 4. Giao diện khi màn hình Nhập giao dịch
-<img width="439" height="803" alt="image" src="https://github.com/user-attachments/assets/793c65ac-d0b3-40fb-b16d-7123da7bc8f0" />
+<img width="394" height="819" alt="image" src="https://github.com/user-attachments/assets/532d16a2-7d99-4393-97e3-16bdd0c0a8d5" />
 
 5. Giao diện màn hình lịch (có tính thu chi theo ngày)
-<img width="451" height="825" alt="image" src="https://github.com/user-attachments/assets/a038c9ff-8e89-4ad6-8196-4bc49e371212" />
+<img width="413" height="801" alt="image" src="https://github.com/user-attachments/assets/fa32ca7d-da68-4f34-9526-33d70c479ff2" />
 
 6. Giao diện màn hình báo cáo (báo cáo thu chi theo tháng/năm)
 <img width="423" height="797" alt="image" src="https://github.com/user-attachments/assets/15f5268c-86e3-421a-8633-260886fca1a4" />
